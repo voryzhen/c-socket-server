@@ -1,6 +1,7 @@
-#include "iostream"
+#include "src/server.h"
 
 int main ()
 {
-    std::cout << "sdf" << std::endl;
+    rv_server::Server s;
+    s.run();
 }

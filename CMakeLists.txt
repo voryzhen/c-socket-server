@@ -7,5 +7,6 @@ add_executable(
 
         # src files
         main.cpp
+        src/server.cpp
 
 )
