@@ -28,8 +28,8 @@ jobs:
         # Build your program with the given configuration
         run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
-      - name: Create file
-        run: 7z a win_ar.zip ./CMakeLists.txt
+      - name: Create archive
+        run: 7z a win_ar.zip ./build/Debug/server.exe
 
       - uses: actions/upload-artifact@v2
         with:
@@ -56,7 +56,7 @@ jobs:
         # Build your program with the given configuration
         run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
-      - name: Create file
+      - name: Create archive
         run: 7z a linux_ar.zip ./CMakeLists.txt
 
       - uses: actions/upload-artifact@v2
