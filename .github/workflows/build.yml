@@ -1,0 +1,103 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+
+  build-win:
+
+    permissions: write-all
+
+    runs-on: windows-2019
+
+    steps:
+
+      - uses: actions/checkout@v2
+
+      - name: Create file
+        run: 7z a win_ar.zip ./CMakeLists.txt
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: my-win-artifact
+          path: ${{github.workspace}}/win_ar.zip
+
+
+  build-linux:
+
+    permissions: write-all
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/checkout@v2
+
+      - name: Create file
+        run: 7z a linux_ar.zip ./CMakeLists.txt
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: my-linux-artifact
+          path: ${{github.workspace}}/linux_ar.zip
+
+
+  release:
+
+    permissions: write-all
+
+    runs-on: ubuntu-latest
+
+    needs: [ build-win, build-linux ]
+
+    steps:
+
+      - uses: actions/checkout@v2
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.run_number }}
+          release_name: Release ${{ github.run_number }}
+          draft: false
+          prerelease: false
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: my-win-artifact
+          path: ./
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: my-linux-artifact
+          path: ./
+
+      - name: Upload Archive Asset Win
+        id: upload-archive-asset-win
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./win_ar.zip
+          asset_name: my-win-artifact.zip
+          asset_content_type: application/zip
+
+      - name: Upload Archive Asset Linux
+        id: upload-archive-asset-lin
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./linux_ar.zip
+          asset_name: my-linux-artifact.zip
+          asset_content_type: application/zip
