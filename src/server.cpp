@@ -46,13 +46,13 @@ namespace rv_server
             for (int i = 0; i < socketCount; i++)
             {
                 // Makes things easy for us doing this assignment
-                SOCKET sock = copy.fd_array[i];
+                int sock = copy.fd_array[i];
 
                 // Is it an inbound communication?
                 if (sock == s_listen)
                 {
                     // Accept a new connection
-                    SOCKET client = accept(s_listen, nullptr, nullptr);
+                    int client = accept(s_listen, nullptr, nullptr);
 
                     // Add the new connection to the list of connected clients
                     FD_SET(client, &master);
@@ -84,7 +84,7 @@ namespace rv_server
         while (master.fd_count > 0)
         {
             // Get the socket number
-            SOCKET sock = master.fd_array[0];
+            int sock = master.fd_array[0];
 
             // Send the goodbye message
             send(sock, msg.c_str(), msg.size() + 1, 0);
@@ -100,7 +100,7 @@ namespace rv_server
 #endif
     }
 
-    void Server::handle_client_request( SOCKET sock )
+    void Server::handle_client_request( int sock )
     {
         char buf[4096];
 
@@ -137,7 +137,7 @@ namespace rv_server
 
             for (int i = 0; i < master.fd_count; i++)
             {
-                SOCKET outSock = master.fd_array[i];
+                int outSock = master.fd_array[i];
                 if (outSock != s_listen && outSock != sock)
                 {
                     std::ostringstream ss;

@@ -30,7 +30,7 @@ namespace rv_server {
             bool win_lib_ok = true;
             bool address_bound = true;
             bool running = true;
-            SOCKET s_listen;
+            int s_listen;
             fd_set master;
 
 #ifdef _WIN32
@@ -38,7 +38,7 @@ namespace rv_server {
 #endif
 
             void init_server ( SOCKADDR_IN & address );
-            void handle_client_request( SOCKET sock );
+            void handle_client_request( int sock );
             void shutting_down_server();
 
     };
