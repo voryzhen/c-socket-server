@@ -57,7 +57,7 @@ jobs:
         run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
       - name: Create archive
-        run: 7z a linux_ar.zip ${{github.workspace}}/build/Release/server
+        run: 7z a linux_ar.zip ${{github.workspace}}/build/server
 
       - uses: actions/upload-artifact@v2
         with:
