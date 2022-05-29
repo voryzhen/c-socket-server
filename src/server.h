@@ -34,10 +34,17 @@ namespace rv_server {
             fd_set master;
 
 #ifdef _WIN32
+            SOCKADDR_IN address;
+#else
+            struct SOCKADDR_IN address;
+#endif
+
+
+#ifdef _WIN32
             bool init_win_lib ();
 #endif
 
-            void init_server ( SOCKADDR_IN & address );
+            void init_server ();
             void handle_client_request( int sock );
             void shutting_down_server();
 

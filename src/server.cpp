@@ -21,8 +21,7 @@ namespace rv_server
         }
 #endif
 
-        SOCKADDR_IN address;
-        init_server ( address );
+        init_server ();
 
         if (!address_bound)
         {
@@ -150,7 +149,7 @@ namespace rv_server
         }
     }
 
-    void Server::init_server ( SOCKADDR_IN & address )
+    void Server::init_server ()
     {
         address.sin_addr.s_addr = inet_addr("127.0.0.1");
         address.sin_port = htons(1111);
