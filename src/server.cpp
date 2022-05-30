@@ -151,13 +151,21 @@ namespace rv_server
 
     void Server::init_server ()
     {
+#ifdef _WIN32
+        SOCKADDR_IN address;
+#else
+        struct sockaddr_in address;
+#endif
         address.sin_addr.s_addr = inet_addr("127.0.0.1");
         address.sin_port = htons(1111);
         address.sin_family = AF_INET;
 
         s_listen = socket( AF_INET, SOCK_STREAM, NULL );
+#ifdef _WIN32
         const int is_bound = bind( s_listen, ( SOCKADDR * ) & address, sizeof ( address ) );
-
+#else
+        const int is_bound = bind( s_listen, ( struct sockaddr * ) & address, sizeof ( address ) );
+#endif
         if (is_bound != 0) {
             address_bound = false;
         } else {

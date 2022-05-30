@@ -31,15 +31,8 @@ namespace rv_server {
             bool win_lib_ok = true;
             bool address_bound = true;
             bool running = true;
-            int s_listen;
+            unsigned int s_listen;
             fd_set master;
-
-//#ifdef _WIN32
-            SOCKADDR_IN address;
-//#else
-//            struct SOCKADDR_IN address;
-//#endif
-
 
 #ifdef _WIN32
             bool init_win_lib ();
