@@ -9,7 +9,7 @@
 #else
 
 #include <sys/socket.h>
-#include <netinet/in.h>
+#include <linux/in.h>
 
 #endif
 
