@@ -34,11 +34,11 @@ namespace rv_server {
             int s_listen;
             fd_set master;
 
-#ifdef _WIN32
+//#ifdef _WIN32
             SOCKADDR_IN address;
-#else
-            struct SOCKADDR_IN address;
-#endif
+//#else
+//            struct SOCKADDR_IN address;
+//#endif
 
 
 #ifdef _WIN32
