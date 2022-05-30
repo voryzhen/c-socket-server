@@ -107,7 +107,7 @@ namespace rv_server
     {
         char buf[4096];
 
-        ZeroMemory(buf, 4096);
+        memset(buf, NULL, 4096);
 
         // Receive message
         int bytesIn = recv(sock, buf, 4096, 0);
@@ -137,10 +137,10 @@ namespace rv_server
             std::cout << "cmd from: " << sock << ", running: " << running << std::endl;
 
             // Send message to other clients, and definiately NOT the listening socket
-
+#ifdef _WIN32
             for (int i = 0; i < master.fd_count; i++)
             {
-                int outSock = master.fd_array[i];
+                unsigned int outSock = master.fd_array[i];
                 if (outSock != s_listen && outSock != sock)
                 {
                     std::ostringstream ss;
@@ -150,6 +150,7 @@ namespace rv_server
                     send(outSock, strOut.c_str(), strOut.size() + 1, 0);
                 }
             }
+#endif
         }
     }
 
