@@ -34,39 +34,43 @@ namespace rv_server
 
         std::cout << "All system ready ..." << std::endl;
 
+        run_loop();
+
+        shutting_down_server();
+    }
+
+    void Server::run_loop()
+    {
         while (running)
         {
             fd_set copy = master;
 
-            // See who's talking to us
             int socketCount = select(0, &copy, nullptr, nullptr, nullptr);
-
-            // Loop through all the current connections / potential connect
+#ifdef _WIN32
             for (int i = 0; i < socketCount; i++)
             {
-                // Makes things easy for us doing this assignment
-                int sock = copy.fd_array[i];
-
-                // Is it an inbound communication?
-                if (sock == s_listen)
-                {
-                    // Accept a new connection
-                    int client = accept(s_listen, nullptr, nullptr);
-
-                    // Add the new connection to the list of connected clients
-                    FD_SET(client, &master);
-
-                    // Send a welcome message to the connected client
-                    std::string welcomeMsg = "Welcome to the Awesome Chat Server!";
-                    send(client, welcomeMsg.c_str(), welcomeMsg.size() + 1, 0);
-                }
-                else // It's an inbound message
-                {
-                    handle_client_request ( sock );
-                }
+                unsigned int sock = copy.fd_array[i];
+                handle_fired_socket(sock);
             }
+#else
+            handle_fired_socket(socketCount);
+#endif
         }
-        shutting_down_server();
+    }
+
+    void Server::handle_fired_socket( unsigned int socket )
+    {
+        if (socket == s_listen)
+        {
+            unsigned int client = accept(s_listen, nullptr, nullptr);
+            FD_SET(client, &master);
+            std::string welcomeMsg = "Welcome to the Awesome Chat Server!";
+            send(client, welcomeMsg.c_str(), (int)(welcomeMsg.size() + 1), 0);
+        }
+        else
+        {
+            handle_client_request ( socket );
+        }
     }
 
     void Server::shutting_down_server()

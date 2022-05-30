@@ -42,6 +42,8 @@ namespace rv_server {
             void handle_client_request( int sock );
             void shutting_down_server();
             void close_server_socket( unsigned int socket );
+            void run_loop();
+            void handle_fired_socket( unsigned int socket );
 
     };
 
