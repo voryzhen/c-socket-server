@@ -84,10 +84,11 @@ namespace rv_server
         // Message to let users know what's happening.
         std::string msg = "Server is shutting down. Goodbye\r\n";
 
+#ifdef _WIN32
         while (master.fd_count > 0)
         {
             // Get the socket number
-            int sock = master.fd_array[0];
+            unsigned int sock = master.fd_array[0];
 
             // Send the goodbye message
             send(sock, msg.c_str(), msg.size() + 1, 0);
@@ -97,7 +98,6 @@ namespace rv_server
             close_server_socket(sock);
         }
 
-#ifdef _WIN32
         // Cleanup winsock
         WSACleanup();
 #endif
