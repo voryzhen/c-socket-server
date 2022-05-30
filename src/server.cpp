@@ -183,7 +183,7 @@ namespace rv_server
 #ifdef _WIN32
         closesocket(socket);
 #else
-        close(socket);
+        pclose(socket);
 #endif
     }
 
