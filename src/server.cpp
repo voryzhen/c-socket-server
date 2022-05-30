@@ -75,7 +75,7 @@ namespace rv_server
         // Remove the listening socket from the master file descriptor set and close it
         // to prevent anyone else trying to connect.
         FD_CLR(s_listen, &master);
-        closesocket(s_listen);
+        close_server_socket(s_listen);
 
         // Message to let users know what's happening.
         std::string msg = "Server is shutting down. Goodbye\r\n";
@@ -90,7 +90,7 @@ namespace rv_server
 
             // Remove it from the master file list and close the socket
             FD_CLR(sock, &master);
-            closesocket(sock);
+            close_server_socket(sock);
         }
 
 #ifdef _WIN32
@@ -110,7 +110,7 @@ namespace rv_server
         if (bytesIn <= 0)
         {
             // Drop the client
-            closesocket(sock);
+            close_server_socket(sock);
             FD_CLR(sock, &master);
         }
         else
@@ -171,6 +171,15 @@ namespace rv_server
         } else {
             listen(s_listen, SOMAXCONN);
         }
+    }
+
+    void Server::close_server_socket( unsigned int socket )
+    {
+#ifdef _WIN32
+        closesocket(socket);
+#else
+        close(socket);
+#endif
     }
 
 #ifdef _WIN32
