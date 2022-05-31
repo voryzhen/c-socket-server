@@ -1,50 +1,33 @@
-#pragma once
+#include "iostream"
 
 #ifdef _WIN32
-
 #pragma comment(lib, "ws2_32.lib")
 #include <winsock2.h>
-#pragma warning(disable: 4996)
-
+#include <ws2tcpip.h>
 #else
-
-#include <sys/socket.h>
-#include <linux/in.h>
-
+#include<unistd.h>
+#include<sys/socket.h>
+#include<sys/types.h>
+#include<netdb.h>
+#include<arpa/inet.h>
 #endif
 
-#include <cstring>
-#include "iostream"
-#include "string"
-#include "sstream"
+namespace rv_server{
 
-namespace rv_server {
-
-    class Server {
+    class RVserver
+    {
 
         public:
-
-            Server();
-            void run();
+            RVserver() = default;
+            int run_server();
 
         private:
 
-            bool win_lib_ok = true;
-            bool address_bound = true;
-            bool running = true;
-            unsigned int s_listen;
-            fd_set master;
+            unsigned int server_socket = 0;
 
-#ifdef _WIN32
-            bool init_win_lib ();
-#endif
-
-            void init_server ();
-            void handle_client_request( int sock );
-            void shutting_down_server();
-            void close_server_socket( unsigned int socket );
-            void run_loop();
-            void handle_fired_socket( unsigned int socket );
+            int init_server();
+            void run_operating_loop();
+            void shutdown();
 
     };
 
