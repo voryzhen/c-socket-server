@@ -75,6 +75,8 @@ jobs:
 
     needs: [ build-win, build-linux ]
 
+    if: github.ref == 'refs/heads/main'
+
     steps:
 
       - uses: actions/checkout@v2
