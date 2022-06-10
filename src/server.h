@@ -14,21 +14,28 @@
 
 namespace rv_server{
 
-    class RVserver
+    class RVServer
     {
+    public:
+        RVServer(std::string  address, unsigned short port);
+        RVServer() = default;
+        int run_server();
 
-        public:
-            RVserver() = default;
-            int run_server();
+    private:
+        unsigned short m_port = 8000;
+        std::string m_address = "127.0.0.1";
 
-        private:
+        unsigned int m_server_socket = 0;
+        bool m_is_server_running = true;
+        fd_set m_socket_set{};
 
-            unsigned int server_socket = 0;
+        int init_server();
+        void run_operating_loop();
+        static void shutdown();
+        void handle_accept();
 
-            int init_server();
-            void run_operating_loop();
-            void shutdown();
-
+        void handle_client_request(unsigned int sock);
+        static bool get_request(unsigned int sock, std::string & command) ;
+        void send_message(const std::string & string_command);
     };
-
-};
+}
