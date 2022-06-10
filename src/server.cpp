@@ -8,6 +8,9 @@ namespace rv_server {
     RVServer::RVServer(std::string address, unsigned short port)
             : m_address(std::move(address)), m_port(port) {}
 
+    RVServer::RVServer(std::string address)
+            : m_address(std::move(address)) {}
+
     int RVServer::run_server() {
         if (init_server() != 0)
             return -1;

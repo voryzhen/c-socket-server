@@ -18,6 +18,7 @@ namespace rv_server{
     {
     public:
         RVServer(std::string  address, unsigned short port);
+        RVServer(std::string  address);
         RVServer() = default;
         int run_server();
 
