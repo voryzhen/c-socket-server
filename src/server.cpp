@@ -63,12 +63,25 @@ namespace rv_server {
     void RVServer::run_operating_loop() {
         while (m_is_server_running) {
             fd_set copy_sock_set = m_socket_set;
+#ifdef _WIN32
             int res = select(0, &copy_sock_set, nullptr, nullptr, nullptr);
             if ( res != SOCKET_ERROR && res > 0 ) {
-                for ( int i = 0; i < res; i++ ) {
+                int loop_size = res;
+#else
+            int res = select(FD_SETSIZE, &copy_sock_set, nullptr, nullptr, nullptr);
+            if ( res != SO_ERROR && res > 0 ) {
+                int loop_size = FD_SETSIZE;
+#endif
+                for ( int i = 0; i < loop_size; i++ ) {
+#ifdef _WIN32
                     unsigned int sock = copy_sock_set.fd_array[i];
-                    if (sock == m_server_socket ) handle_accept();
-                    else                         handle_client_request(sock);
+#else
+                    unsigned int sock = i;
+#endif
+                    if (FD_ISSET(sock, &copy_sock_set)) {
+                        if (sock == m_server_socket) handle_accept();
+                        else handle_client_request(sock);
+                    }
                 }
             }
         }
@@ -97,13 +110,22 @@ namespace rv_server {
         if (get_request(sock, string_command)) {
             send_message(string_command);
         } else {
+#ifdef _WIN32
             closesocket(sock);
+#else
+            close(sock);
+#endif
             FD_CLR(sock, &m_socket_set);
             std::string msg = std::to_string(sock) + " disconnected";
             std::cout << msg << std::endl;
+#ifdef _WIN32
             for (int i = 0; i < m_socket_set.fd_count; i++ ) {
                 unsigned int socket = m_socket_set.fd_array[i];
-                if (socket != m_server_socket) {
+#else
+            for (int i = 0; i < FD_SETSIZE; i++ ) {
+                unsigned int socket = i;
+#endif
+                if (FD_ISSET(socket, &m_socket_set) && socket != m_server_socket) {
                     send(socket, msg.c_str(), (int) (msg.size() + 1), 0);
                 }
             }
@@ -112,9 +134,14 @@ namespace rv_server {
 
     void RVServer::send_message(const std::string &string_command) {
         std::cout << string_command << std::endl;
+#ifdef _WIN32
         for (int i = 0; i < m_socket_set.fd_count; i++ ) {
             unsigned int sock = m_socket_set.fd_array[i];
-            if (sock != m_server_socket) {
+#else
+        for (int i = 0; i < FD_SETSIZE; i++ ) {
+            unsigned int sock = i;
+#endif
+            if (FD_ISSET(socket, &m_socket_set) && sock != m_server_socket) {
                 send(sock, string_command.c_str(), (int) (string_command.size() + 1), 0);
             }
         }
