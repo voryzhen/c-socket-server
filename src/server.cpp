@@ -96,7 +96,7 @@ namespace rv_server {
 
     bool RVServer::get_request(unsigned int sock, std::string & command) {
         char msg[4096];
-        int size = recv(sock, msg, 4096, NULL);
+        int size = recv(sock, msg, 4096, 0);
         if (size > 0) {
             msg[size] = '\0';
             command = std::to_string(sock) + " says: " + std::string(msg) + ", " + std::to_string(size) + " bytes";
@@ -141,7 +141,7 @@ namespace rv_server {
         for (int i = 0; i < FD_SETSIZE; i++ ) {
             unsigned int sock = i;
 #endif
-            if (FD_ISSET(socket, &m_socket_set) && sock != m_server_socket) {
+            if (FD_ISSET(sock, &m_socket_set) && sock != m_server_socket) {
                 send(sock, string_command.c_str(), (int) (string_command.size() + 1), 0);
             }
         }
